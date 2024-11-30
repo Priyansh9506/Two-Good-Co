@@ -69,3 +69,35 @@ products.forEach(product => {
 card.querySelector('.add-btn').addEventListener('click', () => {
     alert(`${product.name} added to the cart!`);
 });
+
+let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+products.forEach(product => {
+    const card = document.createElement('div');
+    card.classList.add('product-card');
+
+    card.innerHTML = `
+        <img src="${product.image}" alt="${product.name}">
+        <div class="product-info">
+            <h3>${product.name}</h3>
+            <div class="product-footer">
+                <span class="price">$${product.price}</span>
+                <button class="add-btn">+</button>
+            </div>
+        </div>
+    `;
+
+    // Add product to cart on button click
+    card.querySelector('.add-btn').addEventListener('click', () => {
+        const productInCart = cart.find(item => item.name === product.name);
+        if (productInCart) {
+            productInCart.quantity += 1; // Increment quantity if the product is already in the cart
+        } else {
+            cart.push({...product, quantity: 1}); // Add new product with quantity
+        }
+        localStorage.setItem('cart', JSON.stringify(cart)); // Save to localStorage
+        alert(`${product.name} added to the cart!`);
+    });
+
+    productSection.appendChild(card);
+});
