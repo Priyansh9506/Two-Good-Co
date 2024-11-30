@@ -65,3 +65,7 @@ products.forEach(product => {
 
     productSection.appendChild(card);
 });
+
+card.querySelector('.add-btn').addEventListener('click', () => {
+    alert(`${product.name} added to the cart!`);
+});
