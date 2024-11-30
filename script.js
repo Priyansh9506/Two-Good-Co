@@ -86,18 +86,63 @@ products.forEach(product => {
             </div>
         </div>
     `;
-
-    // Add product to cart on button click
-    card.querySelector('.add-btn').addEventListener('click', () => {
-        const productInCart = cart.find(item => item.name === product.name);
-        if (productInCart) {
-            productInCart.quantity += 1; // Increment quantity if the product is already in the cart
-        } else {
-            cart.push({...product, quantity: 1}); // Add new product with quantity
-        }
-        localStorage.setItem('cart', JSON.stringify(cart)); // Save to localStorage
-        alert(`${product.name} added to the cart!`);
-    });
-
     productSection.appendChild(card);
 });
+
+ // Add product to cart on button click
+ card.querySelector('.add-btn').addEventListener('click', () => {
+    const productInCart = cart.find(item => item.name === product.name);
+    if (productInCart) {
+        productInCart.quantity += 1; // Increment quantity if the product is already in the cart
+    } else {
+        cart.push({...product, quantity: 1}); // Add new product with quantity
+    }
+    localStorage.setItem('cart', JSON.stringify(cart)); // Save to localStorage
+    alert(`${product.name} added to the cart!`);
+});
+
+    document.addEventListener('DOMContentLoaded', () => {
+    const cartItemsContainer = document.getElementById('cart-items');
+    const totalAmountContainer = document.getElementById('total-amount');
+
+    // Retrieve cart from localStorage
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+    // If cart is empty
+    if (cart.length === 0) {
+        cartItemsContainer.innerHTML = '<p>Your cart is empty.</p>';
+        return;
+    }
+
+    let totalAmount = 0;
+
+    cart.forEach(item => {
+        totalAmount += item.price * item.quantity;
+
+        // Create cart item
+        const cartItem = document.createElement('div');
+        cartItem.classList.add('cart-item');
+
+        cartItem.innerHTML = `
+            <p><strong>${item.name}</strong> x ${item.quantity}</p>
+            <p>Price: $${item.price} each</p>
+            <p>Subtotal: $${item.price * item.quantity}</p>
+            <button class="remove-btn">Remove</button>
+        `;
+
+        // Remove item from cart
+        cartItem.querySelector('.remove-btn').addEventListener('click', () => {
+            const index = cart.findIndex(cartItem => cartItem.name === item.name);
+            if (index !== -1) {
+                cart.splice(index, 1); // Remove item
+                localStorage.setItem('cart', JSON.stringify(cart)); // Update localStorage
+                location.reload(); // Reload page to reflect changes
+            }
+        });
+
+        cartItemsContainer.appendChild(cartItem);
+    });
+
+    totalAmountContainer.textContent = totalAmount.toFixed(2); // Update total
+});
+
