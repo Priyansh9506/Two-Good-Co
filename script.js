@@ -66,25 +66,3 @@ products.forEach(product => {
     productSection.appendChild(card);
 });
 
-card.querySelector('.add-btn').addEventListener('click', () => {
-    alert(`${product.name} added to the cart!`);
-});
-
-let cart = JSON.parse(localStorage.getItem('cart')) || [];
-
-products.forEach(product => {
-    const card = document.createElement('div');
-    card.classList.add('product-card');
-
-    card.innerHTML = `
-        <img src="${product.image}" alt="${product.name}">
-        <div class="product-info">
-            <h3>${product.name}</h3>
-            <div class="product-footer">
-                <span class="price">$${product.price}</span>
-                <button class="add-btn">+</button>
-            </div>
-        </div>
-    `;
-    productSection.appendChild(card);
-});
