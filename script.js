@@ -35,6 +35,8 @@ function validateRegistrationForm() {
 }
 }
 
+// Product Section
+
 let products = [
     {name: "alamais cook", image:"product1.jpg", price: "$190"},
     {name: "rocky road", image:"product2.jpg", price: "$24"},
@@ -64,5 +66,30 @@ products.forEach(product => {
     `;
 
     productSection.appendChild(card);
+});
+
+// String Animation
+
+let path = `M 50 100 Q 768 100 1486 100`;
+let finalPath = `M 50 100 Q 768 100 1486 100`;
+
+let string = document.querySelector("#string");
+
+string.addEventListener("mousemove",function(dets){
+    path = `M 50 100 Q ${dets.x} ${dets.y} 1486 100`;
+    
+    gsap.to("svg path",{
+        attr: {d: path},
+        ease: "power3.out",
+        duration: 0.3,
+    });
+});
+
+string.addEventListener("mouseleave",function(dets){
+    gsap.to("svg path",{
+        attr: {d: finalPath},
+        duration: 0.5,
+        ease: "elastic.out(1,0.2)",
+    });
 });
 

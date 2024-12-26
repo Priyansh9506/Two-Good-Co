@@ -3,6 +3,10 @@
     padding: 0px;
  }
 
+ body{
+      overflow-x: hidden;
+ }
+
  .navbar{
      text-decoration: none;
      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -454,5 +458,9 @@ footer {
    padding: 4px 30px;
 }
 
+/* String ( Break-line ) */
 
-
+#string{
+   height: 200px;
+   width: 100%;
+}
