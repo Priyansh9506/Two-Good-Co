@@ -1,83 +1,94 @@
-*{
-    margin: 0px;
-    padding: 0px;
- }
+/* Import Jost font - a free Futura alternative */
+@import url('https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700&display=swap');
 
- .navbar{
-     text-decoration: none;
-     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
- }
+* {
+   margin: 0px;
+   padding: 0px;
+}
 
- .navdiv{
-    text-decoration: none;
-    background-color: black;
-    color: white;
-    padding-left: 15px;
-    padding-right: 15px;
+html {
+   scroll-behavior: smooth;
+}
 
- }
+body {
+   overflow-x: hidden;
+}
 
- #logo{
-    display: inline-block;
-    padding: 6px;
- }
+.navbar {
+   text-decoration: none;
+   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
 
- #logo img{
+.navdiv {
+   text-decoration: none;
+   background-color: black;
+   color: white;
+   padding-left: 15px;
+   padding-right: 15px;
+
+}
+
+#logo {
+   display: inline-block;
+   padding: 6px;
+}
+
+#logo img {
    height: 40px;
 }
 
- .navdiv ul{
-    color:white;
-    list-style: none;
-    padding-left: 15px;
-    padding-right: 15px;
-    display: inline-block;
- }
+.navdiv ul {
+   color: white;
+   list-style: none;
+   padding-left: 15px;
+   padding-right: 15px;
+   display: inline-block;
+}
 
- .navdiv a{
-    color:white;
-    text-decoration: none;
-    display: inline-block;
-    padding: 4px 15px;
-    
- }
+.navdiv a {
+   color: white;
+   text-decoration: none;
+   display: inline-block;
+   padding: 4px 15px;
 
- .navdiv li{
-    display: inline-block;
-    padding: 4px 15px;
-    font-size : 20px;
- }
+}
 
- .navdiv a:hover{
-    color: black;
-    background-color: white;
-    text-decoration: none;
-    padding: 4px 15px;
-    border-top-left-radius: 5px;
-    border-top-right-radius: 5px;
-    border-bottom-left-radius: 5px;
-    border-bottom-right-radius: 5px;
- }
+.navdiv li {
+   display: inline-block;
+   padding: 4px 15px;
+   font-size: 20px;
+}
 
- #outternav{
+.navdiv a:hover {
+   color: black;
+   background-color: white;
+   text-decoration: none;
+   padding: 4px 15px;
+   border-top-left-radius: 5px;
+   border-top-right-radius: 5px;
+   border-bottom-left-radius: 5px;
+   border-bottom-right-radius: 5px;
+}
+
+#outternav {
    display: inline-block;
    position: relative;
-   top : -5.8px;
+   top: -5.8px;
    height: 52px;
    width: 1400px;
- }
+}
 
-  #innernav{
+#innernav {
    display: flex;
    height: 52px;
    flex-direction: row;
    align-items: center;
    justify-content: space-evenly;
- }
+}
 
 /* SignUp Form */
 
- header {
+header {
    background-color: #333;
    color: white;
    padding: 20px;
@@ -97,10 +108,13 @@ form {
 form label {
    display: block;
    margin-bottom: 5px;
-   font-family: futura;
+   font-family: futura, sans-serif;
+   font-weight: 700;
 }
 
-form input, form textarea, form select {
+form input,
+form textarea,
+form select {
    width: 95%;
    padding: 10px;
    margin-bottom: 15px;
@@ -120,7 +134,7 @@ button {
 button:hover {
    background-color: #ffffff;
    color: black;
-   border : 1px solid black;
+   border: 1px solid black;
 }
 
 footer {
@@ -133,63 +147,70 @@ footer {
 
 /* Home Section */
 
-#tagline h1{
+#tagline h1 {
    font-size: 15.4vw;
    text-transform: uppercase;
-   font-family: futura;
+   font-family: 'Jost', futura, sans-serif;
+   font-weight: 700;
    padding-left: 1vw;
    padding-top: 19vh;
    line-height: 14vw;
 }
-#vdocon{
+
+span {
+   display: inline-block;
+}
+
+#vdocon {
    padding: 15px 10px;
 }
 
 /* About Section */
 
-#about{
-   width : 100%;
+#about {
+   width: 100%;
    height: 100vh;
-   margin : 0 1%;
+   margin: 0 1%;
    display: flex;
    flex-direction: row;
    justify-content: space-evenly;
 }
 
-#info{
+#info {
    display: inline-block;
-   width : 31%;
+   width: 31%;
    padding-top: 15px;
 }
 
-#info h2{
-   font-family: futura;
+#info h2 {
+   font-family: 'Jost', futura, sans-serif;
+   font-weight: 700;
    text-transform: uppercase;
 }
 
-#info p{
+#info p {
    font-family: Helvetica, sans-serif;
 }
 
-#img1{
+#img1 {
    display: inline-block;
-   width : 32%;
+   width: 32%;
 
 }
 
-#img1 img{
+#img1 img {
    height: 90%;
    width: 90%;
    padding: 10px;
    object-fit: contain;
 }
 
-#img2{
+#img2 {
    display: inline-block;
-   width : 32%;
+   width: 32%;
 }
 
-#img2 img{
+#img2 img {
    height: 90%;
    width: 90%;
    padding: 10px;
@@ -198,9 +219,9 @@ footer {
 
 /* Product Section */
 
-#product-about{
-   width : 100%;
-   margin : 0 1%;
+#product-about {
+   width: 100%;
+   margin: 0 1%;
    display: flex;
    flex-direction: row;
    justify-content: flex-end;
@@ -208,23 +229,24 @@ footer {
 
 #info-1 {
    display: inline-block;
-   width : 58%;
+   width: 58%;
    padding-top: 15px;
 }
 
-#info-1 p{
-   font-family: futura;
+#info-1 p {
+   font-family: 'Jost', futura, sans-serif;
+   font-weight: 700;
    text-transform: uppercase;
    font-size: 1.5em;
 }
 
 #info-2 {
    display: inline-block;
-   width : 39%;
+   width: 39%;
    padding-top: 15px;
 }
 
-#info-2 p{
+#info-2 p {
    font-family: Helvetica, sans-serif;
    text-transform: uppercase;
 }
@@ -235,10 +257,10 @@ footer {
    justify-content: space-evenly;
    padding: 40px 10px;
    background-color: white;
-   gap: 30px; 
- }
- 
- .product-card {
+   gap: 30px;
+}
+
+.product-card {
    background-color: white;
    color: black;
    border: 1px solid black;
@@ -247,45 +269,47 @@ footer {
    text-align: center;
    box-shadow: 10px 10px black;
    overflow: hidden;
- }
- 
- .product-card img {
+}
+
+.product-card img {
    width: 250px;
    height: 250px;
    object-fit: cover;
    border-bottom: 1px solid black;
- }
- 
- .product-info {
+}
+
+.product-info {
    padding: 15px;
    font-family: 'Helvetica', sans-serif;
- }
- 
- .product-info h3 {
+}
+
+.product-info h3 {
    font-size: 1.2rem;
    margin-bottom: 10px;
-   font-family: 'Futura', sans-serif;
+   font-family: 'Jost', futura, sans-serif;
+   font-weight: 700;
    text-transform: uppercase;
- }
- 
- .product-info p {
+}
+
+.product-info p {
    font-size: 0.9rem;
-   color: #555; /* Subtle text color for details */
+   color: #555;
+   /* Subtle text color for details */
    margin-bottom: 15px;
- }
- 
- .product-footer {
+}
+
+.product-footer {
    display: flex;
    justify-content: space-between;
    align-items: center;
- }
- 
- .price {
+}
+
+.price {
    font-size: 1.1rem;
    font-weight: bold;
- }
- 
- .add-btn {
+}
+
+.add-btn {
    background-color: black;
    color: white;
    border: 1px solid black;
@@ -297,41 +321,41 @@ footer {
    align-items: center;
    justify-content: center;
    cursor: pointer;
- }
- 
- .add-btn:hover {
+}
+
+.add-btn:hover {
    background-color: white;
    border-color: black;
    color: black;
- }
+}
 
- /* Footer Section */
- #upper-footer{
+/* Footer Section */
+#upper-footer {
    display: flex;
    flex-direction: row;
- }
- 
- #social-link{
+}
+
+#social-link {
    width: 25%;
    height: 75%vh;
    display: flex;
    flex-direction: column;
    justify-content: start;
    text-decoration: none;
-   color : grey;
+   color: grey;
    font-family: Helvetica, sans-serif;
    padding-left: 20px;
- }
+}
 
- #social-link p{
+#social-link p {
    font-size: 0.8rem;
- }
+}
 
- #social-link h5{
+#social-link h5 {
    padding-bottom: 10px;
 }
- 
- #social-link ul{
+
+#social-link ul {
    color: black;
    list-style: none;
    display: flex;
@@ -339,7 +363,7 @@ footer {
    justify-content: start;
 }
 
-#social-link a{
+#social-link a {
    color: black;
    text-decoration: none;
    display: flex;
@@ -348,7 +372,7 @@ footer {
    padding: 2px 0px;
 }
 
-#social-link a:hover{
+#social-link a:hover {
    color: grey;
    text-decoration: none;
    display: flex;
@@ -357,14 +381,14 @@ footer {
    padding: 2px 0px;
 }
 
-#social-link li{
+#social-link li {
    display: flex;
    flex-direction: column;
    justify-content: start;
    padding: 4px 0px;
 }
 
-#other-link{
+#other-link {
    width: 25%;
    height: 75%vh;
    display: flex;
@@ -372,20 +396,20 @@ footer {
    align-items: end;
    justify-content: start;
    text-decoration: none;
-   color : grey;
+   color: grey;
    font-family: Helvetica, sans-serif;
    padding-right: 20px;
- }
+}
 
- #other-link p{
+#other-link p {
    font-size: 0.8rem;
- }
+}
 
- #other-link h5{
+#other-link h5 {
    padding-bottom: 10px;
 }
- 
- #other-link ul{
+
+#other-link ul {
    color: black;
    list-style: none;
    display: flex;
@@ -394,7 +418,7 @@ footer {
    justify-content: start;
 }
 
-#other-link a{
+#other-link a {
    color: black;
    text-decoration: none;
    display: flex;
@@ -404,7 +428,7 @@ footer {
    padding: 2px 0px;
 }
 
-#other-link a:hover{
+#other-link a:hover {
    color: grey;
    text-decoration: none;
    display: flex;
@@ -414,7 +438,7 @@ footer {
    padding: 2px 0px;
 }
 
-#other-link li{
+#other-link li {
    display: flex;
    align-items: end;
    flex-direction: column;
@@ -424,22 +448,22 @@ footer {
 
 /* Lowwer Footer */
 
-#lowwer-footer{
+#lowwer-footer {
    font-family: Helvetica, sans-serif;
    background-color: white;
    color: black;
    font-size: 0.9em;
- }
+}
 
- /* Mid Footer */
+/* Mid Footer */
 
- .mid-footer{
+.mid-footer {
    font-family: Helvetica, sans-serif;
    width: 50%;
    height: 75%vh;
- }
+}
 
- #short-term ul{
+#short-term ul {
    color: black;
    list-style: none;
    display: flex;
@@ -448,11 +472,56 @@ footer {
    justify-content: center;
 }
 
-#short-term li{
+#short-term li {
    display: inline-block;
    align-items: center;
    padding: 4px 30px;
 }
 
+/* String ( Break-line ) */
 
+#string {
+   height: 200px;
+   width: 100%;
+}
 
+/* React App Additions */
+html {
+   scroll-behavior: smooth;
+}
+
+.line {
+   display: block;
+}
+
+/* Cart Page Styles */
+.cart-page {
+   padding: 100px 20px;
+   font-family: Helvetica, sans-serif;
+}
+
+.cart-container {
+   max-width: 800px;
+   margin: 0 auto;
+}
+
+.cart-item {
+   display: flex;
+   align-items: center;
+   justify-content: space-between;
+   border-bottom: 1px solid #eee;
+   padding: 10px 0;
+}
+
+.cart-item img {
+   width: 80px;
+   height: 80px;
+   object-fit: cover;
+}
+
+.cart-total {
+   margin-top: 20px;
+   text-align: right;
+   font-size: 1.5rem;
+   font-weight: bold;
+}
