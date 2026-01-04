@@ -6,14 +6,14 @@ import { useCart } from '../context/CartContext';
 gsap.registerPlugin(ScrollTrigger);
 
 const products = [
-    { name: "alamais cook", image: "product1.jpg", price: "$190" },
-    { name: "rocky road", image: "product2.jpg", price: "$24" },
-    { name: "crackers", image: "product3.jpg", price: "$16" },
-    { name: "candel", image: "product4.jpg", price: "$59" },
-    { name: "fregrence oil", image: "product5.jpg", price: "$39" },
-    { name: "happy teddy", image: "product6.jpg", price: "$49" },
-    { name: "Sleep Pack", image: "product7.jpg", price: "$129" },
-    { name: "Donate Meal", image: "product8.jpg", price: "$10" }
+    { id: 1, name: "alamais cook", image: "product1.jpg", price: "$190" },
+    { id: 2, name: "rocky road", image: "product2.jpg", price: "$24" },
+    { id: 3, name: "crackers", image: "product3.jpg", price: "$16" },
+    { id: 4, name: "candel", image: "product4.jpg", price: "$59" },
+    { id: 5, name: "fregrence oil", image: "product5.jpg", price: "$39" },
+    { id: 6, name: "happy teddy", image: "product6.jpg", price: "$49" },
+    { id: 7, name: "Sleep Pack", image: "product7.jpg", price: "$129" },
+    { id: 8, name: "Donate Meal", image: "product8.jpg", price: "$10" }
 ];
 
 const Home = () => {

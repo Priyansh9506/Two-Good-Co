@@ -67,19 +67,19 @@ const Cart = () => {
                 <div className="cart-container">
                     <h2>Your Cart</h2>
                     <br />
-                    {cartItems.map((item, index) => (
-                        <div key={index} className="cart-item">
+                    {cartItems.map((item) => (
+                        <div key={item.id} className="cart-item">
                             <img src={item.image} alt={item.name} />
                             <div style={{ flex: 1, paddingLeft: '20px' }}>
                                 <h3>{item.name}</h3>
                                 <p>{item.price}</p>
                             </div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                <button onClick={() => updateQuantity(item.name, item.quantity - 1)}>-</button>
+                                <button onClick={() => updateQuantity(item.id, item.quantity - 1)}>-</button>
                                 <span>{item.quantity}</span>
-                                <button onClick={() => updateQuantity(item.name, item.quantity + 1)}>+</button>
+                                <button onClick={() => updateQuantity(item.id, item.quantity + 1)}>+</button>
                             </div>
-                            <button onClick={() => removeFromCart(item.name)} style={{ marginLeft: '20px', background: 'red', borderColor: 'red' }}>X</button>
+                            <button onClick={() => removeFromCart(item.id)} style={{ marginLeft: '20px', background: 'red', borderColor: 'red' }}>X</button>
                         </div>
                     ))}
 
