@@ -161,8 +161,31 @@ span {
    display: inline-block;
 }
 
-#vdocon {
+#video-container {
    padding: 15px 10px;
+   position: relative;
+   cursor: pointer;
+}
+
+#play {
+   position: absolute;
+   top: 50%;
+   left: 50%;
+   transform: translate(-50%, -50%) scale(0);
+   width: 100px;
+   height: 100px;
+   background-color: black;
+   color: white;
+   border-radius: 50%;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   font-size: 16px;
+   font-family: 'Jost', futura, sans-serif;
+   font-weight: 600;
+   text-transform: uppercase;
+   opacity: 0;
+   pointer-events: none;
 }
 
 /* About Section */

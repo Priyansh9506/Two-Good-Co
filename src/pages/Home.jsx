@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useCart } from '../context/CartContext';
@@ -19,6 +19,10 @@ const products = [
 const Home = () => {
     const stringRef = useRef(null);
     const taglineRef = useRef(null);
+    const videoContainerRef = useRef(null);
+    const playBtnRef = useRef(null);
+    const videoRef = useRef(null);
+    const [isPlaying, setIsPlaying] = useState(false);
     const { addToCart } = useCart();
 
     useEffect(() => {
@@ -154,9 +158,44 @@ const Home = () => {
             });
         });
 
+        // Play button animation
+        const videoContainer = videoContainerRef.current;
+        const playBtn = playBtnRef.current;
+
+        const handleVideoMouseEnter = () => {
+            gsap.to(playBtn, {
+                scale: 1,
+                opacity: 1
+            });
+        };
+
+        const handleVideoMouseLeave = () => {
+            gsap.to(playBtn, {
+                scale: 0,
+                opacity: 0
+            });
+        };
+
+        const handleVideoMouseMove = (dets) => {
+            const rect = videoContainer.getBoundingClientRect();
+            const x = dets.clientX - rect.left;
+            const y = dets.clientY - rect.top;
+            gsap.to(playBtn, {
+                left: x,
+                top: y
+            });
+        };
+
+        videoContainer.addEventListener("mouseenter", handleVideoMouseEnter);
+        videoContainer.addEventListener("mouseleave", handleVideoMouseLeave);
+        videoContainer.addEventListener("mousemove", handleVideoMouseMove);
+
         return () => {
             stringEl.removeEventListener("mousemove", handleMouseMove);
             stringEl.removeEventListener("mouseleave", handleMouseLeave);
+            videoContainer.removeEventListener("mouseenter", handleVideoMouseEnter);
+            videoContainer.removeEventListener("mouseleave", handleVideoMouseLeave);
+            videoContainer.removeEventListener("mousemove", handleVideoMouseMove);
             ctx.revert();
         };
     }, []);
@@ -167,8 +206,18 @@ const Home = () => {
                 <div id="tagline" ref={taglineRef}>
                     <h1><div className="line">CHANGE</div><div className="line">THE COURSE</div></h1>
                 </div>
-                <div id="vdocon">
-                    <video autoPlay muted loop src="/video.mp4" height="100%" width="100%"></video>
+                <div id="video-container" ref={videoContainerRef} onClick={() => {
+                    const video = videoRef.current;
+                    if (video.muted) {
+                        video.muted = false;
+                        setIsPlaying(true);
+                    } else {
+                        video.muted = true;
+                        setIsPlaying(false);
+                    }
+                }}>
+                    <video ref={videoRef} autoPlay muted loop src="/video.mp4" height="100%" width="100%"></video>
+                    <div id="play" ref={playBtnRef}>{isPlaying ? 'Pause' : 'Play'}</div>
                 </div>
             </div>
             <br /><br /><br /><br />
