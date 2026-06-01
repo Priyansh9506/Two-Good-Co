@@ -1,6 +1,60 @@
 import React, { useState, useEffect, useRef } from 'react';
 import gsap from 'gsap';
 
+/**
+ * Elastic string — supports BOTH mouse AND touch.
+ */
+function useElasticString(ref) {
+    useEffect(() => {
+        const el = ref.current;
+        if (!el) return;
+
+        const pathEl = el.querySelector("path");
+        if (!pathEl) return;
+
+        const finalPath = "M 50 100 Q 768 100 1486 100";
+
+        const getCoords = (e) => {
+            const rect = el.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            return {
+                x: clientX - rect.left,
+                y: clientY - rect.top,
+            };
+        };
+
+        const onMove = (e) => {
+            const { x, y } = getCoords(e);
+            gsap.to(pathEl, {
+                attr: { d: `M 50 100 Q ${x} ${y} 1486 100` },
+                ease: "power3.out",
+                duration: 0.3,
+            });
+        };
+
+        const onEnd = () => {
+            gsap.to(pathEl, {
+                attr: { d: finalPath },
+                duration: 0.5,
+                ease: "elastic.out(1,0.2)",
+            });
+        };
+
+        el.addEventListener("mousemove", onMove);
+        el.addEventListener("mouseleave", onEnd);
+        el.addEventListener("touchmove", onMove, { passive: true });
+        el.addEventListener("touchend", onEnd);
+
+        return () => {
+            el.removeEventListener("mousemove", onMove);
+            el.removeEventListener("mouseleave", onEnd);
+            el.removeEventListener("touchmove", onMove);
+            el.removeEventListener("touchend", onEnd);
+        };
+    }, [ref]);
+}
+
 const Signup = () => {
     const stringRef = useRef(null);
     const [formData, setFormData] = useState({
@@ -12,45 +66,7 @@ const Signup = () => {
         address: ''
     });
 
-    useEffect(() => {
-        // String Animation - wait for ref to be available
-        if (!stringRef.current) return;
-
-        const pathRef = stringRef.current.querySelector("path");
-        if (!pathRef) return;
-
-        const finalPath = "M 50 100 Q 768 100 1486 100";
-
-        const handleMouseMove = (dets) => {
-            const rect = stringRef.current.getBoundingClientRect();
-            const relativeY = dets.clientY - rect.top;
-            const relativeX = dets.clientX - rect.left;
-            const path = `M 50 100 Q ${relativeX} ${relativeY} 1486 100`;
-
-            gsap.to(pathRef, {
-                attr: { d: path },
-                ease: "power3.out",
-                duration: 0.3,
-            });
-        };
-
-        const handleMouseLeave = () => {
-            gsap.to(pathRef, {
-                attr: { d: finalPath },
-                duration: 0.5,
-                ease: "elastic.out(1,0.2)",
-            });
-        };
-
-        const stringEl = stringRef.current;
-        stringEl.addEventListener("mousemove", handleMouseMove);
-        stringEl.addEventListener("mouseleave", handleMouseLeave);
-
-        return () => {
-            stringEl.removeEventListener("mousemove", handleMouseMove);
-            stringEl.removeEventListener("mouseleave", handleMouseLeave);
-        };
-    }, []);
+    useElasticString(stringRef);
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -91,7 +107,7 @@ const Signup = () => {
 
     return (
         <>
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} style={{ marginTop: '70px' }}>
                 <label htmlFor="name">Full Name :</label>
                 <input type="text" name="name" id="name" placeholder="Enter Name" onChange={handleChange} />
 
@@ -113,7 +129,7 @@ const Signup = () => {
                 <button type="submit">Submit</button>
             </form>
             <div id="string" ref={stringRef}>
-                <svg width="1536" height="200" style={{ width: '100%' }}>
+                <svg viewBox="0 0 1536 200" preserveAspectRatio="none" style={{ width: '100%', height: '100%' }}>
                     <path d="M 50 100 Q 768 100 1486 100" stroke="black" fill="transparent" />
                 </svg>
             </div>

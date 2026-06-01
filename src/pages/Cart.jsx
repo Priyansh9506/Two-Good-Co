@@ -2,49 +2,65 @@ import React, { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { useCart } from '../context/CartContext';
 
-const Cart = () => {
-    const stringRef = useRef(null);
-    const { cartItems, removeFromCart, updateQuantity, cartTotal } = useCart();
-
+/**
+ * Elastic string — supports BOTH mouse AND touch.
+ */
+function useElasticString(ref) {
     useEffect(() => {
-        // String Animation - wait for ref to be available
-        if (!stringRef.current) return;
+        const el = ref.current;
+        if (!el) return;
 
-        const pathRef = stringRef.current.querySelector("path");
-        if (!pathRef) return;
+        const pathEl = el.querySelector("path");
+        if (!pathEl) return;
 
         const finalPath = "M 50 100 Q 768 100 1486 100";
 
-        const handleMouseMove = (dets) => {
-            const rect = stringRef.current.getBoundingClientRect();
-            const relativeY = dets.clientY - rect.top;
-            const relativeX = dets.clientX - rect.left;
-            const path = `M 50 100 Q ${relativeX} ${relativeY} 1486 100`;
+        const getCoords = (e) => {
+            const rect = el.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            return {
+                x: clientX - rect.left,
+                y: clientY - rect.top,
+            };
+        };
 
-            gsap.to(pathRef, {
-                attr: { d: path },
+        const onMove = (e) => {
+            const { x, y } = getCoords(e);
+            gsap.to(pathEl, {
+                attr: { d: `M 50 100 Q ${x} ${y} 1486 100` },
                 ease: "power3.out",
                 duration: 0.3,
             });
         };
 
-        const handleMouseLeave = () => {
-            gsap.to(pathRef, {
+        const onEnd = () => {
+            gsap.to(pathEl, {
                 attr: { d: finalPath },
                 duration: 0.5,
                 ease: "elastic.out(1,0.2)",
             });
         };
 
-        const stringEl = stringRef.current;
-        stringEl.addEventListener("mousemove", handleMouseMove);
-        stringEl.addEventListener("mouseleave", handleMouseLeave);
+        el.addEventListener("mousemove", onMove);
+        el.addEventListener("mouseleave", onEnd);
+        el.addEventListener("touchmove", onMove, { passive: true });
+        el.addEventListener("touchend", onEnd);
 
         return () => {
-            stringEl.removeEventListener("mousemove", handleMouseMove);
-            stringEl.removeEventListener("mouseleave", handleMouseLeave);
+            el.removeEventListener("mousemove", onMove);
+            el.removeEventListener("mouseleave", onEnd);
+            el.removeEventListener("touchmove", onMove);
+            el.removeEventListener("touchend", onEnd);
         };
-    }, []);
+    }, [ref]);
+}
+
+const Cart = () => {
+    const stringRef = useRef(null);
+    const { cartItems, removeFromCart, updateQuantity, cartTotal } = useCart();
+
+    useElasticString(stringRef);
 
     if (cartItems.length === 0) {
         return (
@@ -53,7 +69,7 @@ const Cart = () => {
                     <h2>Your cart is empty</h2>
                 </div>
                 <div id="string" ref={stringRef}>
-                    <svg width="1536" height="200" style={{ width: '100%' }}>
+                    <svg viewBox="0 0 1536 200" preserveAspectRatio="none" style={{ width: '100%', height: '100%' }}>
                         <path d="M 50 100 Q 768 100 1486 100" stroke="black" fill="transparent" />
                     </svg>
                 </div>
@@ -89,7 +105,7 @@ const Cart = () => {
                 </div>
             </div>
             <div id="string" ref={stringRef}>
-                <svg width="1536" height="200" style={{ width: '100%' }}>
+                <svg viewBox="0 0 1536 200" preserveAspectRatio="none" style={{ width: '100%', height: '100%' }}>
                     <path d="M 50 100 Q 768 100 1486 100" stroke="black" fill="transparent" />
                 </svg>
             </div>

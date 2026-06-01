@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useCart } from '../context/CartContext';
@@ -16,6 +16,63 @@ const products = [
     { id: 8, name: "Donate Meal", image: "product8.jpg", price: "$10" }
 ];
 
+/**
+ * Hook up the elastic string SVG — supports BOTH mouse AND touch.
+ */
+function useElasticString(ref) {
+    useEffect(() => {
+        const el = ref.current;
+        if (!el) return;
+
+        const pathEl = el.querySelector("path");
+        if (!pathEl) return;
+
+        const finalPath = "M 50 100 Q 768 100 1486 100";
+
+        const getCoords = (e) => {
+            const rect = el.getBoundingClientRect();
+            // Touch or mouse
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            return {
+                x: clientX - rect.left,
+                y: clientY - rect.top,
+            };
+        };
+
+        const onMove = (e) => {
+            const { x, y } = getCoords(e);
+            gsap.to(pathEl, {
+                attr: { d: `M 50 100 Q ${x} ${y} 1486 100` },
+                ease: "power3.out",
+                duration: 0.3,
+            });
+        };
+
+        const onEnd = () => {
+            gsap.to(pathEl, {
+                attr: { d: finalPath },
+                duration: 0.5,
+                ease: "elastic.out(1,0.2)",
+            });
+        };
+
+        // Mouse
+        el.addEventListener("mousemove", onMove);
+        el.addEventListener("mouseleave", onEnd);
+        // Touch
+        el.addEventListener("touchmove", onMove, { passive: true });
+        el.addEventListener("touchend", onEnd);
+
+        return () => {
+            el.removeEventListener("mousemove", onMove);
+            el.removeEventListener("mouseleave", onEnd);
+            el.removeEventListener("touchmove", onMove);
+            el.removeEventListener("touchend", onEnd);
+        };
+    }, [ref]);
+}
+
 const Home = () => {
     const stringRef = useRef(null);
     const taglineRef = useRef(null);
@@ -23,7 +80,85 @@ const Home = () => {
     const playBtnRef = useRef(null);
     const videoRef = useRef(null);
     const [isPlaying, setIsPlaying] = useState(false);
+    const [videoLoaded, setVideoLoaded] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
     const { addToCart } = useCart();
+
+    // Elastic string — works on both touch and mouse
+    useElasticString(stringRef);
+
+    /* ─── Check viewport on mount + resize ─── */
+    useEffect(() => {
+        const check = () => setIsMobile(window.innerWidth <= 768);
+        check();
+        window.addEventListener('resize', check);
+        return () => window.removeEventListener('resize', check);
+    }, []);
+
+    /* ─── Intersection Observer: lazy-load the video src ─── */
+    useEffect(() => {
+        const container = videoContainerRef.current;
+        const video = videoRef.current;
+        if (!container || !video) return;
+
+        // On mobile, don't autoload — user taps to play
+        if (isMobile) return;
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting && !videoLoaded) {
+                        video.src = '/video.mp4';
+                        video.load();
+                        setVideoLoaded(true);
+                        observer.disconnect();
+                    }
+                });
+            },
+            { rootMargin: '200px', threshold: 0.1 }
+        );
+
+        observer.observe(container);
+        return () => observer.disconnect();
+    }, [isMobile, videoLoaded]);
+
+    /* ─── Handle video play on mobile tap ─── */
+    const handleMobilePlay = useCallback(() => {
+        const video = videoRef.current;
+        if (!video) return;
+
+        if (!videoLoaded) {
+            video.src = '/video.mp4';
+            video.load();
+            setVideoLoaded(true);
+        }
+
+        if (video.paused) {
+            video.muted = false;
+            video.play().catch(() => {
+                video.muted = true;
+                video.play();
+            });
+            setIsPlaying(true);
+        } else {
+            video.pause();
+            setIsPlaying(false);
+        }
+    }, [videoLoaded]);
+
+    /* ─── Handle desktop click: toggle mute ─── */
+    const handleDesktopClick = useCallback(() => {
+        const video = videoRef.current;
+        if (!video) return;
+
+        if (video.muted) {
+            video.muted = false;
+            setIsPlaying(true);
+        } else {
+            video.muted = true;
+            setIsPlaying(false);
+        }
+    }, []);
 
     useEffect(() => {
         // Split text animation for tagline
@@ -48,54 +183,13 @@ const Home = () => {
             });
         }
 
-        // String Animation
-        const pathRef = stringRef.current.querySelector("path");
-        const finalPath = "M 50 100 Q 768 100 1486 100";
-
-        const handleMouseMove = (dets) => {
-            // Calculate relative coordinates to the SVG container if needed, 
-            // but legacy code used dets.x and dets.y directly from mousemove event 
-            // which are relative to viewport or page. 
-            // We need to be careful about coordinate space. 
-            // If the SVG is full width, global X might be fine.
-            // Let's use rect for better precision relative to SVG.
-            const rect = stringRef.current.getBoundingClientRect();
-            const relativeY = dets.clientY - rect.top;
-            const relativeX = dets.clientX - rect.left;
-
-            // Legacy code logic: path = `M 50 100 Q ${dets.x} ${dets.y} 1486 100`;
-            // It used dets.x/y directly. Let's try to match that or improve it.
-            // SVG is 1536 wide in legacy.
-
-            const path = `M 50 100 Q ${relativeX} ${relativeY} 1486 100`;
-
-            gsap.to(pathRef, {
-                attr: { d: path },
-                ease: "power3.out",
-                duration: 0.3,
-            });
-        };
-
-        const handleMouseLeave = () => {
-            gsap.to(pathRef, {
-                attr: { d: finalPath },
-                duration: 0.5,
-                ease: "elastic.out(1,0.2)",
-            });
-        };
-
-        const stringEl = stringRef.current;
-        stringEl.addEventListener("mousemove", handleMouseMove);
-        stringEl.addEventListener("mouseleave", handleMouseLeave);
-
-
         // Scroll Animations
         const ctx = gsap.context(() => {
             gsap.from("#info h2", {
                 scrollTrigger: {
                     trigger: "#about",
                     start: "top 80%",
-                    toggleActions: "play none none reverse"
+                    once: true
                 },
                 opacity: 0,
                 y: 50,
@@ -107,7 +201,7 @@ const Home = () => {
                 scrollTrigger: {
                     trigger: "#about",
                     start: "top 75%",
-                    toggleActions: "play none none reverse"
+                    once: true
                 },
                 opacity: 0,
                 y: 30,
@@ -120,7 +214,7 @@ const Home = () => {
                 scrollTrigger: {
                     trigger: "#about",
                     start: "top 70%",
-                    toggleActions: "play none none reverse"
+                    once: true
                 },
                 opacity: 0,
                 scale: 0.9,
@@ -129,12 +223,11 @@ const Home = () => {
                 ease: "back.out(1.7)"
             });
 
-            // Product cards staggered reveal animation
             gsap.from(".product-card", {
                 scrollTrigger: {
                     trigger: "#product-section",
                     start: "top 85%",
-                    toggleActions: "play none none reverse"
+                    once: true
                 },
                 opacity: 0,
                 y: 60,
@@ -143,12 +236,11 @@ const Home = () => {
                 ease: "power3.out"
             });
 
-            // Product section text animation
             gsap.from("#info-1 p, #info-2 p", {
                 scrollTrigger: {
                     trigger: "#product-about",
                     start: "top 80%",
-                    toggleActions: "play none none reverse"
+                    once: true
                 },
                 opacity: 0,
                 y: 30,
@@ -158,44 +250,42 @@ const Home = () => {
             });
         });
 
-        // Play button animation
+        // Play button animation (desktop only — cursor follower)
         const videoContainer = videoContainerRef.current;
         const playBtn = playBtnRef.current;
+        let videoCleanup = () => {};
 
-        const handleVideoMouseEnter = () => {
-            gsap.to(playBtn, {
-                scale: 1,
-                opacity: 1
-            });
-        };
+        const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
-        const handleVideoMouseLeave = () => {
-            gsap.to(playBtn, {
-                scale: 0,
-                opacity: 0
-            });
-        };
+        if (videoContainer && playBtn && !isTouch) {
+            const handleVideoMouseEnter = () => {
+                gsap.to(playBtn, { scale: 1, opacity: 1 });
+            };
 
-        const handleVideoMouseMove = (dets) => {
-            const rect = videoContainer.getBoundingClientRect();
-            const x = dets.clientX - rect.left;
-            const y = dets.clientY - rect.top;
-            gsap.to(playBtn, {
-                left: x,
-                top: y
-            });
-        };
+            const handleVideoMouseLeave = () => {
+                gsap.to(playBtn, { scale: 0, opacity: 0 });
+            };
 
-        videoContainer.addEventListener("mouseenter", handleVideoMouseEnter);
-        videoContainer.addEventListener("mouseleave", handleVideoMouseLeave);
-        videoContainer.addEventListener("mousemove", handleVideoMouseMove);
+            const handleVideoMouseMove = (dets) => {
+                const rect = videoContainer.getBoundingClientRect();
+                const x = dets.clientX - rect.left;
+                const y = dets.clientY - rect.top;
+                gsap.to(playBtn, { left: x, top: y });
+            };
+
+            videoContainer.addEventListener("mouseenter", handleVideoMouseEnter);
+            videoContainer.addEventListener("mouseleave", handleVideoMouseLeave);
+            videoContainer.addEventListener("mousemove", handleVideoMouseMove);
+
+            videoCleanup = () => {
+                videoContainer.removeEventListener("mouseenter", handleVideoMouseEnter);
+                videoContainer.removeEventListener("mouseleave", handleVideoMouseLeave);
+                videoContainer.removeEventListener("mousemove", handleVideoMouseMove);
+            };
+        }
 
         return () => {
-            stringEl.removeEventListener("mousemove", handleMouseMove);
-            stringEl.removeEventListener("mouseleave", handleMouseLeave);
-            videoContainer.removeEventListener("mouseenter", handleVideoMouseEnter);
-            videoContainer.removeEventListener("mouseleave", handleVideoMouseLeave);
-            videoContainer.removeEventListener("mousemove", handleVideoMouseMove);
+            videoCleanup();
             ctx.revert();
         };
     }, []);
@@ -206,18 +296,37 @@ const Home = () => {
                 <div id="tagline" ref={taglineRef}>
                     <h1><div className="line">CHANGE</div><div className="line">THE COURSE</div></h1>
                 </div>
-                <div id="video-container" ref={videoContainerRef} onClick={() => {
-                    const video = videoRef.current;
-                    if (video.muted) {
-                        video.muted = false;
-                        setIsPlaying(true);
-                    } else {
-                        video.muted = true;
-                        setIsPlaying(false);
-                    }
-                }}>
-                    <video ref={videoRef} autoPlay muted loop src="/video.mp4" height="100%" width="100%"></video>
-                    <div id="play" ref={playBtnRef}>{isPlaying ? 'Pause' : 'Play'}</div>
+                <div
+                    id="video-container"
+                    ref={videoContainerRef}
+                    onClick={isMobile ? handleMobilePlay : handleDesktopClick}
+                >
+                    <video
+                        ref={videoRef}
+                        autoPlay={!isMobile}
+                        muted
+                        loop
+                        playsInline
+                        preload="none"
+                        poster="/video-poster.png"
+                    ></video>
+
+                    {/* Desktop: cursor-follower play button */}
+                    {!isMobile && (
+                        <div id="play" ref={playBtnRef}>{isPlaying ? 'Pause' : 'Play'}</div>
+                    )}
+
+                    {/* Mobile: centered tap-to-play overlay */}
+                    {isMobile && !isPlaying && (
+                        <div className="mobile-play-overlay">
+                            <div className="mobile-play-btn">
+                                <svg viewBox="0 0 24 24" width="48" height="48" fill="white">
+                                    <path d="M8 5v14l11-7z" />
+                                </svg>
+                                <span>Tap to Play</span>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
             <br /><br /><br /><br />
@@ -245,7 +354,7 @@ const Home = () => {
                 <div className="product-section" id="product-section">
                     {products.map((product, index) => (
                         <div className="product-card" key={index}>
-                            <img src={product.image} alt={product.name} />
+                            <img src={product.image} alt={product.name} loading="lazy" />
                             <div className="product-info">
                                 <h3>{product.name}</h3>
                                 <div className="product-footer">
@@ -266,12 +375,12 @@ const Home = () => {
                     <p>What we do is provide a safe space for women to change the course of their own lives.</p><br /><br />
                     <p>After many years of living in crisis, abuse and complex trauma, restoring self-worth is foundational for independence. We believe that through experiences that promote love and respect, we can spark and nurture a sense of self-worth for those on the path of healing.</p>
                 </div>
-                <div id="img1"><img src="/img1.jpg" alt="Two Employees at Two Good Co" /></div>
-                <div id="img2"><img src="/img2.jpg" alt="Old Women as Employees at Two Good Co" /></div>
+                <div id="img1"><img src="/img1.jpg" alt="Two Employees at Two Good Co" loading="lazy" /></div>
+                <div id="img2"><img src="/img2.jpg" alt="Old Women as Employees at Two Good Co" loading="lazy" /></div>
             </div>
 
             <div id="string" ref={stringRef}>
-                <svg width="1536" height="200" style={{ width: '100%' }}>
+                <svg viewBox="0 0 1536 200" preserveAspectRatio="none" style={{ width: '100%', height: '100%' }}>
                     <path d="M 50 100 Q 768 100 1486 100" stroke="black" fill="transparent" />
                 </svg>
             </div><br /><br /><br />
